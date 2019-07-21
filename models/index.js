@@ -10,9 +10,7 @@ function getAllArticles() {
 function getAllNotesByArticle(articleId) {
     return Article.findOne({ _id: articleId })
         .populate("notes")
-        .then(article => {
-            return article.notes
-        });
+        .then(article => article.notes);
 }
 
 function addSavedArticle(article) {
@@ -21,9 +19,9 @@ function addSavedArticle(article) {
 
 function deleteSavedArticle(articleId) {
     return Article.findOne({ _id: articleId }).populate("notes").then(article => {
-        const removesNotes = article.notes.map(note => Note.remove({ _id: note._id }).exec())
+        const removesNotes = article.notes.map(note => Note.deleteOne({ _id: note._id }).exec())
         return Promise.all(removesNotes)
-        .then(() => Article.deleteOne({ _id: articleId }));
+            .then(() => Article.deleteOne({ _id: articleId }));
     })
 }
 
@@ -36,7 +34,10 @@ function addNote(note, articleId) {
         });
 }
 
-function deleteNote() { }
+function deleteNote(noteId, articleId) {
+    return Note.deleteOne({ _id: noteId })
+        .then(() => Article.findOneAndUpdate({ _id: articleId }, { $pull: { notes: noteId } }));
+}
 
 module.exports = {
     getAllArticles,

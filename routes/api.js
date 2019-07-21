@@ -47,7 +47,7 @@ router.get('/getAllNotesByArticle', function (req, res) {
         .then(notes => {
             res.json(notes)
         }).catch(err => {
-            res.json({error: err.message})
+            res.json({ error: err.message })
         })
 });
 
@@ -57,17 +57,17 @@ router.post('/addSavedArticle', function (req, res) {
         .then(article => {
             res.json(article)
         }).catch(err => {
-            res.json({error: err.message})
+            res.json({ error: err.message })
         });
 });
 
 router.post('/deleteSavedArticle', function (req, res) {
     const { articleId } = req.query
     models.deleteSavedArticle(articleId)
-        .then( () => {
-            res.json({ ok: true})
+        .then(() => {
+            res.json({ ok: true })
         }).catch(err => {
-            res.json({error: err.message})
+            res.json({ error: err.message })
         });
 });
 
@@ -77,12 +77,18 @@ router.post('/addNote', function (req, res) {
         .then(note => {
             res.json(note)
         }).catch(err => {
-            res.json({error: err.message})
+            res.json({ error: err.message })
         });
 });
 
-router.get('/deleteNote', function (req, res) {
-    res.send("deleteNote")
+router.post('/deleteNote', function (req, res) {
+    const { noteId, articleId } = req.query
+    models.deleteNote(noteId, articleId)
+        .then(() => {
+            res.json({ ok: true })
+        }).catch(err => {
+            res.json({ error: err.message })
+        });
 });
 
 module.exports = router

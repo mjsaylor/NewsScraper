@@ -42,31 +42,43 @@ router.get('/getAllArticles', function (req, res) {
     })
 
 });
-router.get('/getAllNotesByArticle/:articleId', function (req, res) {
-    models.getAllNotesByArticle(req.params.articleId)
-        .populate("notes")
-        .then(article => {
-            res.json(article)
+router.get('/getAllNotesByArticle', function (req, res) {
+    models.getAllNotesByArticle(req.query.articleId)
+        .then(notes => {
+            res.json(notes)
         }).catch(err => {
-            console.log(err.message)
+            res.json({error: err.message})
         })
 });
 
 router.post('/addSavedArticle', function (req, res) {
-    res.send("addSavedArticle")
+    const { title, link } = req.query;
+    models.addSavedArticle({ title, link })
+        .then(article => {
+            res.json(article)
+        }).catch(err => {
+            res.json({error: err.message})
+        });
 });
 
-router.get('/deleteSavedArticle', function (req, res) {
-    res.send("deleteSavedArticle")
+router.post('/deleteSavedArticle', function (req, res) {
+    const { articleId } = req.query
+    models.deleteSavedArticle(articleId)
+        .then( () => {
+            res.json({ ok: true})
+        }).catch(err => {
+            res.json({error: err.message})
+        });
 });
 
 router.post('/addNote', function (req, res) {
-    const { title, body, articleId } = req.body
+    const { title, body, articleId } = req.query
     models.addNote({ title, body }, articleId)
         .then(note => {
             res.json(note)
-        })
-
+        }).catch(err => {
+            res.json({error: err.message})
+        });
 });
 
 router.get('/deleteNote', function (req, res) {

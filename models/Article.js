@@ -25,6 +25,12 @@ var ArticleSchema = new Schema({
   }]
 });
 
+ArticleSchema.pre("remove", next => {
+  const removesNotes = this.notes.map(note => Note.remove({ _id: note._id }).exec())
+  Promise.all(removesNotes)
+    .then(() => next())
+})
+
 // This creates our model from the above schema, using mongoose's model method
 var Article = mongoose.model("Article", ArticleSchema);
 

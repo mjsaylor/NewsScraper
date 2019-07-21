@@ -1,0 +1,81 @@
+<div id="savedArticles">
+    {{#each articles}}
+    <div class="row" id="article_{{ @index }}">
+        <div class="col s12 m8">
+            <div class="card blue-grey darken-1">
+                <div class="card-content white-text">
+                    <span class="card-title"><a href="{{this.link}}"
+                            id="articlelink_{{ @index }}">{{this.title}}</a></span>
+                    <div class="row">
+                        <form action="/api/addNote" method="post" class="col s12 m6">
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input name="articleId" id="articleId" type="hidden" value="{{ this._id }}">
+                                    <input name="title" id="note_title_{{ this._id }}" type="text" class="validate">
+                                    <label class="active" for="note_title_{{ this._id }}">Note Title</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <i class="material-icons prefix">mode_edit</i>
+                                    <textarea name="body" id="note_body_{{ this._id }}" class="materialize-textarea"></textarea>
+                                    <label for="note_body_{{ this._id }}">Add Note Here</label>
+                                </div>
+                            </div>
+                            <button class="waves-effect waves-light btn" id="addNote_{{ this._id }}"><i
+                                    class="material-icons left">control_point</i>Add Note</button>
+                        </form>
+                        
+                    </div>
+                    {{#each this.notes}}
+                    <div class="row">
+                        <div class="col s12 m5">
+                            <div class="card-panel teal">
+                                <h5>{{this.title}}</h5>
+                                <span class="white-text">{{this.body}}
+                                </span>
+                                <a class="waves-effect waves-light btn" id="deleteNote_{{ this._id }}"><i
+                                        class="material-icons left">cancel</i>Delete Note</a>
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+                        $(document).on("click", "#deleteNote_{{ this._id }}", function () {
+                            const noteId = encodeURIComponent("{{ this._id }}");
+                            const articleId = encodeURIComponent("{{ @../this._id }}");
+                            // Run a POST request to save the article, using what's entered in the inputs
+                            $.ajax({
+                                method: "POST",
+                                url: `/api/deleteNote?noteId=${noteId}&articleId=${articleId}`
+                            })
+                                // With that done
+                                .then(function (data) {
+                                    location.reload(true);
+                                });
+                        });
+                    </script>
+                    {{/each}}
+                </div>
+                <div class="card-action">
+                    <a class="waves-effect waves-light btn" id="deleteArticle_{{ this._id }}"><i
+                            class="material-icons left">delete</i>Delete Article</a>
+
+                </div>
+            </div>
+        </div>
+        <script>
+            $(document).on("click", "#deleteArticle_{{ this._id }}", function () {
+                const articleId = encodeURIComponent("{{ this._id }}");
+                $.ajax({
+                    method: "POST",
+                    url: `/api/deleteSavedArticle?articleId=${articleId}`
+                })
+                    // With that done
+                    .then(function (data) {
+                        location.reload(true);
+                    });
+            });
+        </script>
+    </div>
+    {{/each}}
+</div>

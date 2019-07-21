@@ -1,13 +1,20 @@
 var express = require('express')
 const router = express.Router()
 const api = require("./api")
+const { scrapeArticles } = require('../utils/scraper')
+const models = require("../models")
+
 
 router.get('/', function(req, res) {
-    res.send("home")
+    scrapeArticles().then(articles => {
+        res.render("index", { articles, homePage: true })
+    })
 });
 
 router.get('/savedArticles', function(req, res) {
-    res.send("saved articles")
+    models.getAllArticles().then(articles => {
+        res.render("savedArticles", { articles })
+    })
 });
 
 // router.use('/', router)
